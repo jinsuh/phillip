@@ -1,6 +1,9 @@
 # phillip
 Hello, this is Phillip.
 
+# !help
+Shows the available list of commands.
+
 # !test
 Simple test command
 
