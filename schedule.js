@@ -187,8 +187,8 @@ function getEventInfo(msg, commandArgs, isReschedule) {
     day = dayMap.get(potentialDayText);
   } else {
     isDayInPT = true;
-    let date = new Date();
-    day = date.getDay();
+    let date = new Date().toLocaleString("en-US", {timeZone: "America/Los_Angeles"});
+    day = new Date(date).getDay();
     hourMinIdx--;
     timeZoneIdx--;
   }
@@ -268,7 +268,8 @@ function getHourMin(day, text) {
 }
 
 function isPastTime(day, hourMin) {
-  let today = new Date();
+  let today = new Date().toLocaleString("en-US", {timeZone: "America/Los_Angeles"});
+  today = new Date(today);
   if (today.getDay() !== day) {
     // We can ignore if the days don't match cause we'll schedule it
     // for next week.
