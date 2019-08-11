@@ -26,6 +26,10 @@ const commandType = {
   RESCHEDULE: {
     availableChannels: new Set([]),
     runCommand: commands.reschedule,
+  },
+  TIMEZONE: {
+    availableChannels: new Set([]),
+    runCommand: commands.timeZone,
   }
 }
 const commandMap = 
@@ -34,7 +38,9 @@ const commandMap =
         ['!stock', commandType.STOCK],
         ['!event', commandType.EVENT],
         ['!remove', commandType.REMOVE],
-        ['!reschedule', commandType.RESCHEDULE]]);
+        ['!reschedule', commandType.RESCHEDULE],
+        ['!timezone', commandType.TIMEZONE],
+      ]);
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);

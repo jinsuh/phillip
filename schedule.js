@@ -102,17 +102,21 @@ const rescheduleEventCommand = function(msg, commandArgs) {
   }
   name = eventInfo.name;
   eventInfo = getEventInfo(msg, commandArgs, /* isReschedule= */ true);
+  if (!eventInfo) {
+    msg.reply('Unable to reschedule. Example usage: `!reschedule Mon 5:30pm PT`');
+    return;
+  }
   eventInfo.name = name;
   scheduledJob.reschedule(`${eventInfo.min} ${eventInfo.hour} * * ${dayMap.get(eventInfo.day)}`);
   msg.channel.send(
-    `Rescheduled event, ${eventInfo.name}, on ${eventInfo.day} at `
+    `Rescheduled event, ${name}, on ${eventInfo.day} at `
     + `${eventInfo.hour}:${eventInfo.min} PT`);
 }
 
 const setTimeZoneCommand = function(msg, commandArgs) {
   if (commandArgs.length != 2) {
     msg.reply(
-        'Setting time zone requires 2 arguments: `!setTimeZone {ET|CT|MT|PT}`');
+        'Setting time zone requires 2 arguments: `!timezone {ET|CT|MT|PT}`');
     return;
   }
   let offset = getTimeZoneOffset(commandArgs[1]);
@@ -121,7 +125,7 @@ const setTimeZoneCommand = function(msg, commandArgs) {
     return;
   }
   userToTimeZone.set(msg.author, offset);
-  msg.reply(`Done. Your time zone is set to ${offset.name}.`);
+  msg.reply(`done. Your time zone is set to ${offset.name}.`);
 }
 
 function getEventInfo(msg, commandArgs, isReschedule) {
@@ -249,7 +253,7 @@ function getTimeZoneOffset(text) {
 function replyWithExampleUsage(msg) {
   msg.reply(
       'Sorry, could not schedule event\n'
-      + 'Example usage: `!event Mon 5:30pm PT`');
+      + 'Example usage: `!event someEvent Mon 5:30pm PT`');
 }
 
 function getKeyByValue(map, searchValue) {

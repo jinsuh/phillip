@@ -56,4 +56,5 @@ module.exports = {
   event: schedule.event,
   remove: schedule.remove,
   reschedule: schedule.reschedule,
+  timeZone: schedule.timeZone,
 }
