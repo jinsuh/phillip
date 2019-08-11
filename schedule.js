@@ -226,10 +226,11 @@ function isPastTime(day, hourMin) {
     console.log('Not the same day');
     return false;
   }
-  if (today.getHours() > hourMin.hour) {
-    console.log('hour is earlier');
-    return true;
+  if (today.getHours() < hourMin.hour) {
+    console.log('requested hour is later');
+    return false;
   }
+  console.log(`today min: ${today.getMinutes()} requested: ${hourMin.min}`);
   return today.getMinutes() >= hourMin.min;
 }
 
