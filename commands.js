@@ -4,8 +4,22 @@ const schedule = require('./schedule.js');
 
 const ALPHA_KEY = process.env.STOCK_API;
 
+const getCommand = function(msg, commandArgs) {
+  let commandText = commandArgs[0];
+  if (commandArgs.length <= 0 || !commandMap.has(commandText)) {
+    return null;
+  }
+  return commandMap.get(commandText);
+}
+
 const testCommand = function(msg, commandArgs) {
   msg.channel.send(`hello ${msg.author}`);
+}
+
+const listCommand = function(msg, commandArgs) {
+  msg.channel.send(
+      `Here are the commands:\n`
+      + Array.from(commandMap.keys()).join('\n'));
 }
 
 const stockCommand = function(msg, commandArgs) {
@@ -50,11 +64,49 @@ const stockCommand = function(msg, commandArgs) {
   });
 }
 
+const commandType = {
+  COMMANDS: {
+    availableChannels: new Set([]),
+    runCommand: listCommand,
+  },
+  TEST: {
+    availableChannels: new Set([]),
+    runCommand: testCommand,
+  },
+  STOCK: {
+    availableChannels: new Set([
+      'stocks-investments',
+    ]),
+    runCommand: stockCommand,
+  },
+  EVENT: {
+    availableChannels: new Set([]),
+    runCommand: schedule.event,
+  },
+  REMOVE: {
+    availableChannels: new Set([]),
+    runCommand: schedule.remove,
+  },
+  RESCHEDULE: {
+    availableChannels: new Set([]),
+    runCommand: schedule.reschedule,
+  },
+  TIMEZONE: {
+    availableChannels: new Set([]),
+    runCommand: schedule.timeZone,
+  }
+}
+const commandMap = 
+    new Map([
+        ['!help', commandType.COMMANDS],
+        ['!test', commandType.TEST],
+        ['!stock', commandType.STOCK],
+        ['!event', commandType.EVENT],
+        ['!remove', commandType.REMOVE],
+        ['!reschedule', commandType.RESCHEDULE],
+        ['!timezone', commandType.TIMEZONE],
+      ]);
+
 module.exports = {
-  test: testCommand,
-  stock: stockCommand,
-  event: schedule.event,
-  remove: schedule.remove,
-  reschedule: schedule.reschedule,
-  timeZone: schedule.timeZone,
+  getCommand: getCommand,
 }

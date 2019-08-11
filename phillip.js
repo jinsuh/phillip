@@ -4,43 +4,6 @@ const client = new Discord.Client();
 const commands = require('./commands.js');
 
 const nameForChannel = new Map();
-const commandType = {
-  TEST: {
-    availableChannels: new Set([]),
-    runCommand: commands.test,
-  },
-  STOCK: {
-    availableChannels: new Set([
-      'stocks-investments',
-    ]),
-    runCommand: commands.stock,
-  },
-  EVENT: {
-    availableChannels: new Set([]),
-    runCommand: commands.event,
-  },
-  REMOVE: {
-    availableChannels: new Set([]),
-    runCommand: commands.remove,
-  },
-  RESCHEDULE: {
-    availableChannels: new Set([]),
-    runCommand: commands.reschedule,
-  },
-  TIMEZONE: {
-    availableChannels: new Set([]),
-    runCommand: commands.timeZone,
-  }
-}
-const commandMap = 
-    new Map([
-        ['!test', commandType.TEST],
-        ['!stock', commandType.STOCK],
-        ['!event', commandType.EVENT],
-        ['!remove', commandType.REMOVE],
-        ['!reschedule', commandType.RESCHEDULE],
-        ['!timezone', commandType.TIMEZONE],
-      ]);
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -49,14 +12,13 @@ client.on('ready', () => {
 
 client.on('message', msg => {
   let args = msg.content.split(' ');
-  console.log(`args: ${args}`);
-  let commandText = args[0];
-  if (args.length <= 0 || !commandMap.has(commandText)) {
+  let command = commands.getCommand(msg, args);
+  if (!command) {
     return;
   }
-  let command = commandMap.get(commandText);
   if (!isCommandAllowedInChannel(command, msg.channel)) {
     console.log('Command not allowed in channel');
+    msg.reply('Command not allowed in this channel');
     return;
   }
   command.runCommand(msg, args);
