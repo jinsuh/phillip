@@ -84,6 +84,16 @@ const eventCommand = function(msg, commandArgs) {
     + `${eventInfo.hour}:${eventInfo.min} PT`);
 }
 
+const reminderCommand = function(msg, commandArgs) {
+  if (!scheduledJob) {
+    msg.reply('No event has been scheduled');
+    return;
+  }
+  msg.channel.send(
+      `We have an upcoming event: ${eventInfo.name} on ${eventInfo.day} at `
+      + `${eventInfo.hour}:${eventInfo.min} PT`)
+}
+
 const removeEventCommand = function(msg, commandArgs) {
   if (!scheduledJob) {
     msg.reply('No event has been scheduled');
@@ -136,7 +146,6 @@ function getEventInfo(msg, commandArgs, isReschedule) {
   let day;
   let isDayInPT = false;
   let potentialDayText = commandArgs[dayIdx].charAt(0).toUpperCase() + commandArgs[dayIdx].slice(1);
-  console.log(potentialDayText);
   if (dayMap.has(potentialDayText)) {
     day = dayMap.get(potentialDayText);
   } else {
@@ -165,7 +174,6 @@ function getEventInfo(msg, commandArgs, isReschedule) {
   if (offsetHour >= 0) {
     hourMin.hour = offsetHour;
   } else {
-    console.log('offset');
     if (!isDayInPT) {
       day = (parseInt(day) - 1 + 7) % 7;
     }
@@ -177,6 +185,7 @@ function getEventInfo(msg, commandArgs, isReschedule) {
       return null;
     }
     hourMin.hour = parseInt(hourMin.hour) + 12;
+
     if (isPastTime(day, hourMin)) {
       console.log('Date has already passed');
       return null;
@@ -239,7 +248,6 @@ function isPastTime(day, hourMin) {
 }
 
 function getTimeZoneOffset(text) {
-  console.log(text);
   if (!text) {
     return null;
   }
@@ -266,6 +274,7 @@ function getKeyByValue(map, searchValue) {
 
 module.exports = {
   event: eventCommand,
+  reminder: reminderCommand,
   remove: removeEventCommand,
   reschedule: rescheduleEventCommand,
   timeZone: setTimeZoneCommand,

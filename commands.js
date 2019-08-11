@@ -3,6 +3,7 @@ const request = require('request');
 const schedule = require('./schedule.js');
 
 const ALPHA_KEY = process.env.STOCK_API;
+const ALL_CHANNELS = new Set([]);
 
 const getCommand = function(msg, commandArgs) {
   let commandText = commandArgs[0];
@@ -66,11 +67,11 @@ const stockCommand = function(msg, commandArgs) {
 
 const commandType = {
   COMMANDS: {
-    availableChannels: new Set([]),
+    availableChannels: ALL_CHANNELS,
     runCommand: listCommand,
   },
   TEST: {
-    availableChannels: new Set([]),
+    availableChannels: ALL_CHANNELS,
     runCommand: testCommand,
   },
   STOCK: {
@@ -80,19 +81,23 @@ const commandType = {
     runCommand: stockCommand,
   },
   EVENT: {
-    availableChannels: new Set([]),
+    availableChannels: ALL_CHANNELS,
     runCommand: schedule.event,
   },
+  REMINDER: {
+    availableChannels: ALL_CHANNELS,
+    runCommand: schedule.reminder
+  },
   REMOVE: {
-    availableChannels: new Set([]),
+    availableChannels: ALL_CHANNELS,
     runCommand: schedule.remove,
   },
   RESCHEDULE: {
-    availableChannels: new Set([]),
+    availableChannels: ALL_CHANNELS,
     runCommand: schedule.reschedule,
   },
   TIMEZONE: {
-    availableChannels: new Set([]),
+    availableChannels: ALL_CHANNELS,
     runCommand: schedule.timeZone,
   }
 }
@@ -102,6 +107,7 @@ const commandMap =
         ['!test', commandType.TEST],
         ['!stock', commandType.STOCK],
         ['!event', commandType.EVENT],
+        ['!reminder', commandType.REMINDER],
         ['!remove', commandType.REMOVE],
         ['!reschedule', commandType.RESCHEDULE],
         ['!timezone', commandType.TIMEZONE],
