@@ -1,0 +1,20 @@
+{
+  "name": "phillip-bot",
+  "version": "1.0.0",
+  "description": "Hello this is Phillip",
+  "main": "philllip.js",
+  "author": "SUUUU",
+  "scripts": {
+    "start": "node phillip.js",
+    "dev": "nodemon phillip.js"
+  },
+  "dependencies": {
+    "discord.js": "^11.5.1",
+    "dotenv": "^8.0.0",
+    "node-schedule": "^1.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1",
+    "request": "^2.88.0"
+  }
+}
