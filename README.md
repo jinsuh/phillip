@@ -1,8 +1,21 @@
 # phillip
 Hello, this is Phillip.
 
-!test
+# !test
+Simple test command
 
-!stock {STOCK ABBREVIATION}
+# !stock {STOCK ABBREVIATION}
+Information about a certain stock
 
-!event (Mon | Tue | Wed | ...) ##:##(AM/PM) ET/CT/MT/PT 
+# !event name (Mon | Tue | Wed | ...) ##:##(AM/PM) ET/CT/MT/PT 
+Schedules an event. I will ping the channel at that time.
+Example commands: 
+- !event party Mon 2:42pm PT
+- !event something 14:52pm CT
+- !event ahhhhh 6:42 ET
+
+# !remove
+Removes a scheduled event if there is one.
+
+# !reschedule (Mon | Tue | Wed | ...) ##:##(AM/PM) ET/CT/MT/PT 
+Cancels the previously scheduled event and reschedules it to a new time.
