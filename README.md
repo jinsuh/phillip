@@ -18,6 +18,12 @@ Example commands:
 - !event ahhhhh 6:42 ET
 You can remove the timezone if you've already set your preference via !timezone
 
+# !join
+Joins an event if one is scheduled.
+
+# !leave
+Leave an event if one is scheduled.
+
 # !reminder
 Shows information about a scheduled event.
 
