@@ -41,6 +41,7 @@ const userToTimeZone = new Map();
 const SPLIT_TIME_REGEX = /^[0-9]?[0-9]:[0-9][0-9]/i;
 const NUMBER_REGEX = /^[0-9]$/i
 const AMPM_REGEX = /^[0-9]?[0-9]:[0-9][0-9](A|P)M/i;
+const acceptedPeople = new Set();
 let scheduledJob;
 let eventInfo;
 
@@ -79,24 +80,57 @@ const eventCommand = function(msg, commandArgs) {
     replyWithExampleUsage(msg);
     return;
   }
+  acceptedPeople.add(msg.author);
   msg.channel.send(
     `Scheduled event, ${eventInfo.name}, on ${eventInfo.day} at `
-    + `${eventInfo.hour}:${eventInfo.min} PT`);
+    + `${eventInfo.hour}:${eventInfo.min} PT\n`
+    + attendeesList());
 }
 
-const reminderCommand = function(msg, commandArgs) {
+const joinCommand = function(msg, commandArgs) {
   if (!scheduledJob) {
     msg.reply('No event has been scheduled');
     return;
   }
+  if (acceptedPeople.has(msg.author)) {
+    msg.reply(`Baka, you've already joined`);
+    return;
+  }
+  acceptedPeople.add(msg.author);
+  msg.reply(`you've joined the event: ${eventInfo.name} on ${eventInfo.day} at `
+    + `${eventInfo.hour}:${eventInfo.min} PT\n`
+    + attendeesList());
+}
+
+const leaveCommand = function(msg, commandArgs) {
+  if (!scheduledJob) {
+    noEventMessage(msg);
+    return;
+  }
+  if (!acceptedPeople.has(msg.author)) {
+    msg.reply(`baka, you didn't even join the event.`);
+    return;
+  }
+  acceptedPeople.delete(msg.author);
+  msg.reply(`you've left the event: ${eventInfo.name} on ${eventInfo.day} at `
+    + `${eventInfo.hour}:${eventInfo.min} PT\n`
+    + attendeesList());
+}
+
+const reminderCommand = function(msg, commandArgs) {
+  if (!scheduledJob) {
+    noEventMessage(msg);
+    return;
+  }
   msg.channel.send(
       `We have an upcoming event: ${eventInfo.name} on ${eventInfo.day} at `
-      + `${eventInfo.hour}:${eventInfo.min} PT`)
+      + `${eventInfo.hour}:${eventInfo.min} PT\n`
+      + attendeesList());
 }
 
 const removeEventCommand = function(msg, commandArgs) {
   if (!scheduledJob) {
-    msg.reply('No event has been scheduled');
+    noEventMessage(msg);
     return;
   }
   scheduledJob.cancel();
@@ -107,7 +141,7 @@ const removeEventCommand = function(msg, commandArgs) {
 
 const rescheduleEventCommand = function(msg, commandArgs) {
   if (!scheduledJob) {
-    msg.reply('No event has been scheduled');
+    noEventMessage(msg);
     return;
   }
   name = eventInfo.name;
@@ -118,9 +152,12 @@ const rescheduleEventCommand = function(msg, commandArgs) {
   }
   eventInfo.name = name;
   scheduledJob.reschedule(`${eventInfo.min} ${eventInfo.hour} * * ${dayMap.get(eventInfo.day)}`);
+  availablePeople.clear();
+  availablePeople.add(msg.author);
   msg.channel.send(
     `Rescheduled event, ${name}, on ${eventInfo.day} at `
-    + `${eventInfo.hour}:${eventInfo.min} PT`);
+    + `${eventInfo.hour}:${eventInfo.min} PT\n`
+    + attendeesList());
 }
 
 const setTimeZoneCommand = function(msg, commandArgs) {
@@ -185,7 +222,6 @@ function getEventInfo(msg, commandArgs, isReschedule) {
       return null;
     }
     hourMin.hour = parseInt(hourMin.hour) + 12;
-
     if (isPastTime(day, hourMin)) {
       console.log('Date has already passed');
       return null;
@@ -239,12 +275,13 @@ function isPastTime(day, hourMin) {
     console.log('Not the same day');
     return false;
   }
-  if (today.getHours() < hourMin.hour) {
-    console.log('requested hour is later');
-    return false;
+  if (today.getHours() === parseInt(hourMin.hour)) {
+    console.log(`today min: ${today.getMinutes()} requested: ${hourMin.min}`);
+    return today.getMinutes() >= parseInt(hourMin.min);
   }
-  console.log(`today min: ${today.getMinutes()} requested: ${hourMin.min}`);
-  return today.getMinutes() >= hourMin.min;
+  console.log(`today hours: ${today.getHours()} requested: ${hourMin.hour}`);
+  return today.getHours() > parseInt(hourMin.hour);
+  
 }
 
 function getTimeZoneOffset(text) {
@@ -272,8 +309,25 @@ function getKeyByValue(map, searchValue) {
   }
 }
 
+function getListOfPeople() {
+  return [...acceptedPeople].map(author => author.username).join('\n');
+}
+
+function noEventMessage(msg) {
+  msg.reply('No event has been scheduled');
+}
+
+function attendeesList() {
+  if (acceptedPeople.size === 0) {
+    return 'No people attending';
+  }
+  return `List of people attending:\n` + getListOfPeople();
+}
+
 module.exports = {
   event: eventCommand,
+  join: joinCommand,
+  leave: leaveCommand,
   reminder: reminderCommand,
   remove: removeEventCommand,
   reschedule: rescheduleEventCommand,

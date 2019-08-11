@@ -84,6 +84,14 @@ const commandType = {
     availableChannels: ALL_CHANNELS,
     runCommand: schedule.event,
   },
+  JOIN: {
+    availableChannels: ALL_CHANNELS,
+    runCommand: schedule.join,
+  },
+  LEAVE: {
+    availableChannels: ALL_CHANNELS,
+    runCommand: schedule.leave,
+  },
   REMINDER: {
     availableChannels: ALL_CHANNELS,
     runCommand: schedule.reminder
@@ -107,6 +115,8 @@ const commandMap =
         ['!test', commandType.TEST],
         ['!stock', commandType.STOCK],
         ['!event', commandType.EVENT],
+        ['!join', commandType.JOIN],
+        ['!leave', commandType.LEAVE],
         ['!reminder', commandType.REMINDER],
         ['!remove', commandType.REMOVE],
         ['!reschedule', commandType.RESCHEDULE],
